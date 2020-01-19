@@ -9,7 +9,7 @@ class MainActivity : BaseActivity(0) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_profile)
+        setContentView(R.layout.activity_likes)
         setupBottomNavigation()
         Log.d(TAG, "oncreate")
     }
