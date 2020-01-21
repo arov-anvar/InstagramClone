@@ -1,9 +1,11 @@
-package com.example.instagramclone
+package com.example.instagramclone.view
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import com.example.instagramclone.R
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.android.synthetic.main.activity_likes.*
 
 class MainActivity : BaseActivity(0) {
 
@@ -17,7 +19,15 @@ class MainActivity : BaseActivity(0) {
         Log.d(TAG, "oncreate")
 
         mAuth = FirebaseAuth.getInstance()
-        mAuth.signOut()
+        outPutBtn.setOnClickListener{
+            mAuth.signOut()
+        }
+        mAuth.addAuthStateListener {
+            if (it.currentUser == null) {
+                startActivity(Intent(this, LoginActivity::class.java))
+                finish()
+            }
+        }
 //        auth.signInWithEmailAndPassword("arovanvar1@gmail.com", "Password1234")
 //            .addOnCompleteListener{
 //                if (it.isSuccessful) {

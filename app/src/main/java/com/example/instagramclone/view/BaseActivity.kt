@@ -1,9 +1,9 @@
-package com.example.instagramclone
+package com.example.instagramclone.view
 
 import android.content.Intent
-import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.example.instagramclone.*
 import kotlinx.android.synthetic.main.bottom_navigation_view.*
 
 abstract class BaseActivity(val navNumber: Int) : AppCompatActivity() {

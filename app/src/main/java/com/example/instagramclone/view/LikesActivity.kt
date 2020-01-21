@@ -1,8 +1,9 @@
-package com.example.instagramclone
+package com.example.instagramclone.view
 
 import android.os.Bundle
+import com.example.instagramclone.R
 
-class ShareActivity : BaseActivity(2) {
+class LikesActivity : BaseActivity(3) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

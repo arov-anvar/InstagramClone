@@ -1,7 +1,8 @@
-package com.example.instagramclone
+package com.example.instagramclone.view
 
 import android.content.Intent
 import android.os.Bundle
+import com.example.instagramclone.R
 import kotlinx.android.synthetic.main.activity_profile.*
 
 class ProfileActivity : BaseActivity(4) {

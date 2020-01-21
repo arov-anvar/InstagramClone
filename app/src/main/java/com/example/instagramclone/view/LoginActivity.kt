@@ -1,17 +1,23 @@
-package com.example.instagramclone
+package com.example.instagramclone.view
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
+import android.widget.Toast
+import com.example.instagramclone.R
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_login.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 
-class LoginActivity : AppCompatActivity(), KeyboardVisibilityEventListener, TextWatcher {
+class LoginActivity : AppCompatActivity(), KeyboardVisibilityEventListener, TextWatcher,
+    View.OnClickListener {
+
+    private lateinit var mAuth: FirebaseAuth
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +27,9 @@ class LoginActivity : AppCompatActivity(), KeyboardVisibilityEventListener, Text
         loginButton.isEnabled = false
         emailInput.addTextChangedListener(this)
         passwordInput.addTextChangedListener(this)
+        loginButton.setOnClickListener(this)
+
+        mAuth = FirebaseAuth.getInstance()
     }
 
     override fun onVisibilityChanged(isOpen: Boolean) {
@@ -36,12 +45,28 @@ class LoginActivity : AppCompatActivity(), KeyboardVisibilityEventListener, Text
     override fun afterTextChanged(s: Editable?) {
         // кнопака loginButton будет доступна тольно когда
         // emailInput и passwordInput будут не пустыми
-        loginButton.isEnabled =
-            emailInput.text.toString().isNotEmpty() &&
-                    passwordInput.text.toString().isNotEmpty()
+        loginButton.isEnabled = validate(emailInput.text.toString(), passwordInput.text.toString())
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+    override fun onClick(v: View) {
+        val email = emailInput.text.toString()
+        val password = passwordInput.text.toString()
+        if (validate(email, password)) {
+            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener{
+                if (it.isSuccessful) {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                }
+            }
+        } else {
+            Toast.makeText(this, "plese enter email and password", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun validate(email: String, password: String) =
+        email.isNotEmpty() && password.isNotEmpty()
 }
