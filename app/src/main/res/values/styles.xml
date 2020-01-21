@@ -74,8 +74,9 @@
 
     <style name="login_button" parent="login_input">
         <item name="android:background">@drawable/login_btn_background</item>
-        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textColor">@color/login_btn_color</item>
         <item name="android:textAllCaps">false</item>
+        <item name="android:stateListAnimator">@animator/login_btn_animator</item>
     </style>
 
 
