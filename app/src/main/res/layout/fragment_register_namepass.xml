@@ -5,27 +5,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/person_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:src="@drawable/person"
-        app:layout_constraintStart_toStartOf="parent"
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:text="enter fullname and passward"
+        android:textColor="@color/colorBlack"
+        android:textSize="17sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="50dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/emailInput"
+        android:id="@+id/fullNameInput"
         style="@style/login_input"
-        android:hint="email"
-        android:inputType="textEmailAddress"
-        app:layout_constraintTop_toBottomOf="@id/person_image" />
+        android:hint="full name"
+        android:inputType="textPersonName"
+        app:layout_constraintTop_toBottomOf="@id/title" />
+
+    <EditText
+        android:id="@id/passwordInput"
+        style="@style/login_input"
+        android:hint="Passward"
+        android:inputType="textPassword"
+        app:layout_constraintTop_toBottomOf="@id/fullNameInput" />
 
     <Button
-        android:id="@+id/nextButton"
+        android:id="@+id/registerBtn"
         style="@style/login_button"
-        android:text="Next"
-        app:layout_constraintTop_toBottomOf="@id/emailInput" />
+        android:text="Register"
+        app:layout_constraintTop_toBottomOf="@id/passwordInput" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
