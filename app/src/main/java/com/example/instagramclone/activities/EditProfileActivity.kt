@@ -7,8 +7,10 @@ import android.widget.TextView
 import com.example.instagramclone.R
 import com.example.instagramclone.model.User
 import com.example.instagramclone.views.PasswordDialog
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_edit_profile.*
@@ -42,15 +44,20 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
             })
     }
 
-    private fun updateProfile() {
-        mPendingUser = User(
+    private fun readInputs(): User {
+        val phoneStr = phoneInput.text.toString()
+        return User(
             name = nameInput.text.toString(),
             userName = usernameInput.text.toString(),
             website = websiteInput.text.toString(),
             bio = bioInput.text.toString(),
             email = emailInput.text.toString(),
-            phone = phoneInput.text.toString().toLong()
+            phone = if (phoneStr.isEmpty()) 0 else phoneStr.toLong()
         )
+    }
+
+    private fun updateProfile() {
+        mPendingUser = readInputs()
         val error = validate(mPendingUser)
         if (error == null) {
             if (mPendingUser.email == mUser.email) {
@@ -72,15 +79,10 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
         if (user.email != mUser.email) updateMap["email"] = user.email
         if (user.phone != mUser.phone) updateMap["phone"] = user.phone
 
-        mDatabase.child("users").child(mAuth.currentUser!!.uid).updateChildren(updateMap)
-            .addOnCompleteListener{
-                if (it.isSuccessful) {
-                    showToast("Profile saved")
-                    finish()
-                } else {
-                    showToast(it.exception!!.message!!)
-                }
-            }
+        mDatabase.updateUser(mAuth.currentUser!!.uid, updateMap) {
+            showToast("Profile saved")
+            finish()
+        }
     }
 
     private fun validate(user: User): String? =
@@ -92,16 +94,43 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
         }
 
     override fun onPasswordConfirm(password: String) {
-        val credential = EmailAuthProvider.getCredential(mUser.email, password)
-        mAuth.currentUser!!.reauthenticate(credential).addOnCompleteListener{
-            if (it.isSuccessful) {
-                mAuth.currentUser!!.updateEmail(mPendingUser.email).addOnCompleteListener{
-                    if (it.isSuccessful) {
-                        updateUser(mPendingUser)
-                    } else {
-                        showToast(it.exception!!.message!!)
-                    }
+        if (password.isEmpty()) {
+            val credential = EmailAuthProvider.getCredential(mUser.email, password)
+            mAuth.currentUser!!.reauthenticate(credential) {
+                mAuth.currentUser!!.updateEmail(mPendingUser.email) {
+                    updateUser(mPendingUser)
                 }
+            }
+        } else {
+            showToast("You should enter your password")
+        }
+    }
+
+    private fun DatabaseReference.updateUser(uid: String, updates: Map<String, Any>,
+                                             onSuccess: () -> Unit) {
+        child("users").child(mAuth.currentUser!!.uid).updateChildren(updates)
+            .addOnCompleteListener{
+                if (it.isSuccessful) {
+                    onSuccess()
+                } else {
+                    showToast(it.exception!!.message!!)
+                }
+            }
+    }
+
+    private fun FirebaseUser.updateEmail(email: String, onSuccess: () -> Unit) {
+        updateEmail(email).addOnCompleteListener{
+            if (it.isSuccessful) {
+                onSuccess()
+            } else {
+                showToast(it.exception!!.message!!)
+            }
+        }
+    }
+    private fun FirebaseUser.reauthenticate(credential: AuthCredential, onSuccess: () -> Unit) {
+        reauthenticate(credential).addOnCompleteListener{
+            if (it.isSuccessful) {
+                onSuccess()
             } else {
                 showToast(it.exception!!.message!!)
             }
