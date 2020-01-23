@@ -1,9 +1,9 @@
-package com.example.instagramclone.view
+package com.example.instagramclone.activities
 
 import android.os.Bundle
 import com.example.instagramclone.R
 
-class SearchActivity : BaseActivity(1) {
+class LikesActivity : BaseActivity(3) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

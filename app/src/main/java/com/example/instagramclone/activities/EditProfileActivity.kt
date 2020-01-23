@@ -1,11 +1,10 @@
-package com.example.instagramclone.view
+package com.example.instagramclone.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
 import com.example.instagramclone.R
 import com.example.instagramclone.model.User
-import com.example.instagramclone.view.ValueEventListenerAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_edit_profile.*

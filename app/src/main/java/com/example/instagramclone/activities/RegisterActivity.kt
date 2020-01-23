@@ -1,4 +1,4 @@
-package com.example.instagramclone.view
+package com.example.instagramclone.activities
 
 import android.content.Context
 import android.content.Intent
@@ -16,10 +16,15 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.fragment_register_email.*
+import kotlinx.android.synthetic.main.fragment_register_email.emailInput
 import kotlinx.android.synthetic.main.fragment_register_namepass.*
+import kotlinx.android.synthetic.main.fragment_register_namepass.passwordInput
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 
-class RegisterActivity : AppCompatActivity(), EmailFragment.Listener, NamePassFragment.Listener {
+class RegisterActivity : AppCompatActivity(), NamePassFragment.Listener, EmailFragment.Listener{
     private val TAG = "RegisterActivity"
     private var mEmail: String? = null
     private lateinit var mAuth: FirebaseAuth
@@ -40,9 +45,21 @@ class RegisterActivity : AppCompatActivity(), EmailFragment.Listener, NamePassFr
     override fun onNext(email: String) {
         if (email.isNotEmpty()) {
             mEmail = email
-            supportFragmentManager.beginTransaction().replace(R.id.frameLayout, NamePassFragment())
-                .addToBackStack(null)
-                .commit()
+            mAuth.fetchSignInMethodsForEmail(email).addOnCompleteListener{
+                if (it.isSuccessful) {
+                    if (it.result?.signInMethods?.isEmpty() != false) {
+                        supportFragmentManager.beginTransaction().replace(R.id.frameLayout, NamePassFragment())
+                            .addToBackStack(null)
+                            .commit()
+                    } else {
+                        showToast("This email already exists")
+                    }
+                } else {
+                    showToast(it.exception!!.message!!)
+                }
+            }
+        } else {
+            showToast("Please enter email")
         }
     }
 
@@ -112,6 +129,7 @@ class EmailFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        coordinateBtnAndInputs(nextButton, emailInput)
         nextButton.setOnClickListener{
             val email = emailInput.text.toString()
             mListener.onNext(email)
@@ -140,6 +158,7 @@ class NamePassFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        coordinateBtnAndInputs(registerBtn, fullNameInput, passwordInput)
         registerBtn.setOnClickListener{
             val fullName = fullNameInput.text.toString()
             val password = passwordInput.text.toString()

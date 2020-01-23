@@ -1,4 +1,4 @@
-package com.example.instagramclone.view
+package com.example.instagramclone.activities
 
 import android.content.Intent
 import android.os.Bundle

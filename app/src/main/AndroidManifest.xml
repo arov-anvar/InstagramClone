@@ -11,16 +11,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.RegisterActivity"></activity>
         <activity
-            android:name=".view.LoginActivity"
+            android:name=".activities.RegisterActivity"
             android:windowSoftInputMode="stateVisible|adjustResize"></activity>
-        <activity android:name=".view.EditProfileActivity" />
-        <activity android:name=".view.ShareActivity" />
-        <activity android:name=".view.SearchActivity" />
-        <activity android:name=".view.ProfileActivity" />
-        <activity android:name=".view.LikesActivity" />
-        <activity android:name=".view.MainActivity">
+        <activity
+            android:name=".activities.LoginActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize"></activity>
+        <activity android:name=".activities.EditProfileActivity" />
+        <activity android:name=".activities.ShareActivity" />
+        <activity android:name=".activities.SearchActivity" />
+        <activity android:name=".activities.ProfileActivity" />
+        <activity android:name=".activities.LikesActivity" />
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
