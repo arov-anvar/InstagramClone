@@ -61,10 +61,22 @@
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
         <TextView
+            android:id="@+id/changePhotoText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Change photo"
+            android:textColor="@color/colorBlue"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/profileImageView" />
+
+        <TextView
             android:id="@+id/nameLabel"
             style="@style/edit_profile_label"
             android:text="Name"
-            app:layout_constraintTop_toBottomOf="@+id/profileImageView" />
+            app:layout_constraintTop_toBottomOf="@+id/changePhotoText" />
 
         <EditText
             android:id="@+id/nameInput"
