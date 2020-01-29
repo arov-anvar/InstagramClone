@@ -2,5 +2,6 @@ package com.example.instagramclone.model
 
 import android.provider.ContactsContract
 
-data class User(val name: String = "", val userName: String = "", val website: String = "",
-                val bio: String = "", val email: String = "", val phone: Long = 0L, val photo: String = "")
+data class User(val name: String = "", val userName: String = "", val email: String = "",
+                val website: String? = null, val bio: String? = null, val phone: Long? = null,
+                val photo: String? = null)
