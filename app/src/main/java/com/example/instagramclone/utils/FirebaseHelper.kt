@@ -11,18 +11,18 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
 class FirebaseHelper(private val activity: Activity) {
-    val mAuth: FirebaseAuth =
+    val auth: FirebaseAuth =
         FirebaseAuth.getInstance()
-    val mDatabase: DatabaseReference = FirebaseDatabase.getInstance()
+    val database: DatabaseReference = FirebaseDatabase.getInstance()
         .reference
-    val mStorage: StorageReference = FirebaseStorage.getInstance()
+    val storage: StorageReference = FirebaseStorage.getInstance()
         .reference
 
     fun updateUser(
         updates: Map<String, Any?>,
         onSuccess: () -> Unit
     ) {
-        mDatabase.child("users").child(mAuth.currentUser!!.uid).updateChildren(updates)
+        database.child("users").child(auth.currentUser!!.uid).updateChildren(updates)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     onSuccess()
@@ -33,7 +33,7 @@ class FirebaseHelper(private val activity: Activity) {
     }
 
     fun updateEmail(email: String, onSuccess: () -> Unit) {
-        mAuth.currentUser!!.updateEmail(email).addOnCompleteListener {
+        auth.currentUser!!.updateEmail(email).addOnCompleteListener {
             if (it.isSuccessful) {
                 onSuccess()
             } else {
@@ -43,7 +43,7 @@ class FirebaseHelper(private val activity: Activity) {
     }
 
     fun reauthenticate(credential: AuthCredential, onSuccess: () -> Unit) {
-        mAuth.currentUser!!.reauthenticate(credential).addOnCompleteListener {
+        auth.currentUser!!.reauthenticate(credential).addOnCompleteListener {
             if (it.isSuccessful) {
                 onSuccess()
             } else {
@@ -56,25 +56,25 @@ class FirebaseHelper(private val activity: Activity) {
         photo: Uri,
         onSuccess: (photoUrl: String) -> Unit
     ) {
-        val ref = mStorage.child("users/${mAuth.currentUser!!.uid}/photo")
+        val ref = storage.child("users/${auth.currentUser!!.uid}/photo")
         ref.putFile(photo)
             .addOnCompleteListener { it ->
-            if (it.isSuccessful) {
-                ref.downloadUrl.addOnCompleteListener{
-                    val photoUrl = it.result.toString()
-                    mDatabase.child("users/${mAuth.currentUser!!.uid}/photo").setValue(photoUrl)
-                        .addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                onSuccess(photoUrl)
-                            } else {
-                                activity.showToast(it.exception!!.message!!)
+                if (it.isSuccessful) {
+                    ref.downloadUrl.addOnCompleteListener {
+                        val photoUrl = it.result.toString()
+                        database.child("users/${auth.currentUser!!.uid}/photo").setValue(photoUrl)
+                            .addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    onSuccess(photoUrl)
+                                } else {
+                                    activity.showToast(it.exception!!.message!!)
+                                }
                             }
-                        }
+                    }
+                } else {
+                    activity.showToast(it.exception!!.message!!)
                 }
-            } else {
-                activity.showToast(it.exception!!.message!!)
             }
-        }
     }
 
 
@@ -82,7 +82,7 @@ class FirebaseHelper(private val activity: Activity) {
         photoUrl: String,
         onSuccess: () -> Unit
     ) {
-        mDatabase.child("users/${mAuth.currentUser!!.uid}/photo").setValue(photoUrl)
+        database.child("users/${auth.currentUser!!.uid}/photo").setValue(photoUrl)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     onSuccess()
@@ -93,5 +93,5 @@ class FirebaseHelper(private val activity: Activity) {
     }
 
     fun currentUserReference(): DatabaseReference =
-        mDatabase.child("users").child(mAuth.currentUser!!.uid)
+        database.child("users").child(auth.currentUser!!.uid)
 }

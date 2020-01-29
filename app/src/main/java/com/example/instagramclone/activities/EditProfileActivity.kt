@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.widget.TextView
 import com.example.instagramclone.R
 import com.example.instagramclone.model.User
-import com.example.instagramclone.utils.CameraPictureTaker
+import com.example.instagramclone.utils.CameraHelper
 import com.example.instagramclone.utils.FirebaseHelper
 import com.example.instagramclone.utils.ValueEventListenerAdapter
 import com.example.instagramclone.views.PasswordDialog
@@ -20,18 +20,17 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
     private lateinit var mFirebaseHelper: FirebaseHelper
     private lateinit var mUser: User
     private lateinit var mPendingUser: User
-    private lateinit var cameraPictureTaker: CameraPictureTaker
+    private lateinit var cameraHelper: CameraHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
 
-        cameraPictureTaker =
-            CameraPictureTaker(this)
+        cameraHelper = CameraHelper(this)
 
         closeImage.setOnClickListener { finish() }
         saveImage.setOnClickListener { updateProfile() }
-        changePhotoText.setOnClickListener { cameraPictureTaker.takeCameraPicture() }
+        changePhotoText.setOnClickListener { cameraHelper.takeCameraPicture() }
 
         mFirebaseHelper = FirebaseHelper(this)
 
@@ -61,8 +60,8 @@ class EditProfileActivity : AppCompatActivity(), PasswordDialog.Listener {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == cameraPictureTaker.REQUEST_CODE && resultCode == RESULT_OK) {
-            mFirebaseHelper.uploadUserPhoto(cameraPictureTaker.imageUri!!) {
+        if (requestCode == cameraHelper.REQUEST_CODE && resultCode == RESULT_OK) {
+            mFirebaseHelper.uploadUserPhoto(cameraHelper.imageUri!!) {
                 mFirebaseHelper.updateUserPhoto(it) {
                     mUser = mUser.copy(photo = it)
                     profileImageView.loadUserPhoto(mUser.photo)
