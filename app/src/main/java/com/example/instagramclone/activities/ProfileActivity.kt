@@ -76,9 +76,6 @@ class ImagesAdapter(private val images: List<String>) :
         holder.image.loadImage(images[position])
     }
 
-    private fun ImageView.loadImage(image: String) {
-        Glide.with(this).load(image).centerCrop().into(this)
-    }
 }
 
 class SquareImageView(context: Context, attrs: AttributeSet) : ImageView(context, attrs) {

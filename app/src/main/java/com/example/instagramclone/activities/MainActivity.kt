@@ -68,8 +68,4 @@ class FeedAdapter(private val posts: List<FeedPost>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.view.postImage.loadImage(posts[position].image)
     }
-
-    private fun ImageView.loadImage(image: String) {
-        Glide.with(this).load(image).centerCrop().into(this)
-    }
 }
