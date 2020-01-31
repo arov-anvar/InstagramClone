@@ -23,7 +23,7 @@
 
                 <ImageView
                     android:id="@+id/closeImage"
-                    style="@style/toolbar_image"
+                    style="@style/icon"
                     android:src="@drawable/ic_close"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +38,7 @@
 
                 <ImageView
                     android:id="@+id/saveImage"
-                    style="@style/toolbar_image"
+                    style="@style/icon"
                     android:src="@drawable/ic_check"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

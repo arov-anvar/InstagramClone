@@ -20,21 +20,21 @@
 
     <EditText
         android:id="@+id/fullNameInput"
-        style="@style/login_input"
+        style="@style/big_input"
         android:hint="full name"
         android:inputType="textPersonName"
         app:layout_constraintTop_toBottomOf="@id/title" />
 
     <EditText
         android:id="@id/passwordInput"
-        style="@style/login_input"
+        style="@style/big_input"
         android:hint="Passward"
         android:inputType="textPassword"
         app:layout_constraintTop_toBottomOf="@id/fullNameInput" />
 
     <Button
         android:id="@+id/registerBtn"
-        style="@style/login_button"
+        style="@style/big_button"
         android:text="Register"
         app:layout_constraintTop_toBottomOf="@id/passwordInput" />
 

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/userPhotoImage"
+        style="@style/icon"
+        android:src="@drawable/person"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/usernameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Genry"
+        android:textColor="@color/colorBlack"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/userPhotoImage"
+        app:layout_constraintStart_toEndOf="@+id/userPhotoImage"
+        app:layout_constraintTop_toTopOf="@+id/userPhotoImage" />
+
+    <ImageView
+        android:id="@+id/moreImage"
+        style="@style/icon"
+        android:src="@drawable/ic_more"
+        app:layout_constraintBottom_toBottomOf="@+id/userPhotoImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/userPhotoImage" />
+
+    <ImageView
+        android:id="@+id/postImage"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/image_placeholder"
+        app:layout_constraintBottom_toTopOf="@id/likeImage"
+        app:layout_constraintTop_toBottomOf="@+id/userPhotoImage" />
+
+    <ImageView
+        android:id="@+id/likeImage"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_likes_border"
+        app:layout_constraintBottom_toBottomOf="@+id/likesText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/postImage" />
+
+    <ImageView
+        android:id="@+id/commentImage"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_comments_border"
+        app:layout_constraintBottom_toBottomOf="@id/likeImage"
+        app:layout_constraintStart_toEndOf="@id/likeImage"
+        app:layout_constraintTop_toTopOf="@id/likeImage" />
+
+    <ImageView
+        android:id="@+id/shareImage"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_share_border"
+        app:layout_constraintBottom_toBottomOf="@+id/likeImage"
+        app:layout_constraintStart_toEndOf="@+id/commentImage"
+        app:layout_constraintTop_toTopOf="@+id/likeImage" />
+
+    <TextView
+        android:id="@+id/likesText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="123 likes"
+        android:textColor="@color/colorBlack"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/captionText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/likeImage" />
+
+    <TextView
+        android:id="@+id/captionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This is message will be caption"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/likesText"
+        app:layout_constraintTop_toBottomOf="@+id/likesText" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

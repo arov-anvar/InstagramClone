@@ -26,8 +26,17 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                style="@style/toolbar_image"
-                android:src="@drawable/ic_action_name"
+                android:id="@+id/addFriendsImage"
+                style="@style/icon"
+                android:src="@drawable/ic_add_friends"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/settingImage"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/settingImage"
+                style="@style/icon"
+                android:src="@drawable/ic_more"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
