@@ -1,7 +1,7 @@
 package com.example.instagramclone.activities
 
 import android.os.Bundle
-import android.os.PersistableBundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.instagramclone.R
 import com.example.instagramclone.model.User
 import com.example.instagramclone.utils.FirebaseHelper
+import com.example.instagramclone.utils.TaskSourceOnCompleteListener
 import com.example.instagramclone.utils.ValueEventListenerAdapter
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.database.DatabaseReference
 import kotlinx.android.synthetic.main.activity_add_friends.*
-import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.add_friends_item.view.*
 
 class AddFriendsActivity : AppCompatActivity(), FriendsAdapter.Listener {
@@ -23,20 +25,18 @@ class AddFriendsActivity : AppCompatActivity(), FriendsAdapter.Listener {
     private lateinit var mFirebase: FirebaseHelper
     private lateinit var mAdapter: FriendsAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_friends)
 
-        mFirebase = FirebaseHelper(this)
-        mAdapter = FriendsAdapter(this)
+        backImage.setOnClickListener { finish() }
 
+        mFirebase = FirebaseHelper(this)
+        mAdapter = FriendsAdapter(this, mFirebase.auth.uid.toString())
         val uid = mFirebase.auth.currentUser!!.uid
 
-        addFriendsRecycler.adapter = mAdapter
-        addFriendsRecycler.layoutManager = LinearLayoutManager(this)
-
         mFirebase.database.child("users").addValueEventListener(ValueEventListenerAdapter {
-            val allUsers = it.children.map { it.getValue(User::class.java)!!.copy(uid = it.key) }
+            val allUsers = it.children.map { it.asUser()!! }
             // функция возвращает два значения первое то которое равно Uid, а остальные которые
             // не равны uid возвращаются в виде списка
             val (userList, otherUsersList) = allUsers.partition { it.uid == uid }
@@ -45,6 +45,8 @@ class AddFriendsActivity : AppCompatActivity(), FriendsAdapter.Listener {
             mAdapter.update(mUsers, mUser.follows)
         })
 
+        addFriendsRecycler.adapter = mAdapter
+        addFriendsRecycler.layoutManager = LinearLayoutManager(this)
     }
 
     override fun follow(uid: String) {
@@ -60,14 +62,30 @@ class AddFriendsActivity : AppCompatActivity(), FriendsAdapter.Listener {
     }
 
     private fun setFollow(uid: String, follow: Boolean, onSuccess: () -> Unit) {
-        val followTask = mFirebase.database.child("users").child(mUser.uid!!).child("follows")
-            .child(uid)
-        val setFollow = if (follow) followTask.setValue(true) else followTask.removeValue()
-        val followerTask = mFirebase.database.child("users").child(uid).child("followers")
-            .child(mUser.uid!!)
-        val setFollower = if (follow) followerTask.setValue(true) else followerTask.removeValue()
+        fun DatabaseReference.setValueTrueOrRemove(value: Boolean) =
+            if (value) setValue(true) else removeValue()
 
-        setFollow.continueWithTask({setFollower}).addOnCompleteListener {
+        val followTask = mFirebase.database.child("users").child(mUser.uid).child("follow")
+            .child(uid).setValueTrueOrRemove(follow)
+        val followersTask = mFirebase.database.child("users").child(uid).child("followers")
+            .child(mUser.uid).setValueTrueOrRemove(follow)
+
+        val feedPostsTask = task<Void> {taskSource ->
+            mFirebase.database.child("feed-posts").child(uid)
+                .addListenerForSingleValueEvent(ValueEventListenerAdapter {
+                    val postsMap = if (follow) {
+                        it.children.map { it.key to it.value }.toMap()
+                    } else {
+                        it.children.map { it.key to null }.toMap()
+                    }
+                    mFirebase.database.child("feed-posts").child(mUser.uid).updateChildren(postsMap)
+                        .addOnCompleteListener(
+                            TaskSourceOnCompleteListener(taskSource)
+                        )
+                })
+        }
+
+        Tasks.whenAll(followTask, followersTask, feedPostsTask).addOnCompleteListener {
             if (it.isSuccessful) {
                 onSuccess()
             } else {
@@ -77,7 +95,7 @@ class AddFriendsActivity : AppCompatActivity(), FriendsAdapter.Listener {
     }
 }
 
-class FriendsAdapter(private val listener: FriendsAdapter.Listener) :
+class FriendsAdapter(private val listener: Listener, private val uidAuthUser: String) :
     RecyclerView.Adapter<FriendsAdapter.ViewHolder>() {
 
     private var mPositions = mapOf<String, Int>()
@@ -92,9 +110,8 @@ class FriendsAdapter(private val listener: FriendsAdapter.Listener) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.add_friends_item, parent, false)
-        return view
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.add_friends_item, parent, false)
+        return ViewHolder(view)
     }
 
     override fun getItemCount(): Int = mUsers.size
@@ -102,26 +119,33 @@ class FriendsAdapter(private val listener: FriendsAdapter.Listener) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         with(holder) {
             val user = mUsers[position]
-            view.photoImage.loadImage(user.photo!!)
+            view.photoImage.loadImage(user.photo ?: "")
             view.userNameText.text = user.userName
             view.nameText.text = user.name
-            view.followButton.setOnClickListener { listener.follow(user.uid!!) }
-            view.unfollowButton.setOnClickListener { listener.unfollow(user.uid!!) }
+            view.followButton.setOnClickListener { listener.follow(user.uid) }
+            view.unfollowButton.setOnClickListener { listener.unfollow(user.uid) }
 
-            val follows = mFollows[user.uid] ?: false
-            if (follows) {
+            if (user.followers.containsKey(uidAuthUser)) {
                 view.followButton.visibility = View.GONE
                 view.unfollowButton.visibility = View.VISIBLE
             } else {
                 view.followButton.visibility = View.VISIBLE
                 view.unfollowButton.visibility = View.GONE
             }
+//            val follows = mFollows[user.uid] ?: false
+//            if (follows) {
+//                view.followButton.visibility = View.GONE
+//                view.unfollowButton.visibility = View.VISIBLE
+//            } else {
+//                view.followButton.visibility = View.VISIBLE
+//                view.unfollowButton.visibility = View.GONE
+//            }
         }
     }
 
     fun update(users: List<User>, follows: Map<String, Boolean>) {
         mUsers = users
-        mPositions = users.withIndex().map { (idx, user) -> user.uid!! to idx }.toMap()
+        mPositions = users.withIndex().map { (idx, user) -> user.uid to idx }.toMap()
         mFollows = follows
         notifyDataSetChanged()
     }

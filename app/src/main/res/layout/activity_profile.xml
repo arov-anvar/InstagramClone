@@ -19,8 +19,8 @@
 
             <TextView
                 android:id="@+id/userNameTextView"
-                android:text="Anvar"
                 style="@style/toolbar_title"
+                android:text="Anvar"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -133,8 +133,8 @@
         android:layout_height="0dp"
         android:layout_marginTop="30dp"
         android:background="@drawable/top_border_grey"
-        app:layout_constraintTop_toBottomOf="@id/editProfileButton"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"/>
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintTop_toBottomOf="@id/editProfileButton" />
 
     <include layout="@layout/bottom_navigation_view" />
 

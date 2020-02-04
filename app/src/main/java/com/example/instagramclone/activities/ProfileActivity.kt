@@ -38,11 +38,12 @@ class ProfileActivity : BaseActivity(4) {
 
         addFriendsImage.setOnClickListener {
             val intent = Intent(this, AddFriendsActivity::class.java)
-            startActivity(intent) }
+            startActivity(intent)
+        }
 
         mFirebaseHelper = FirebaseHelper(this)
         mFirebaseHelper.currentUserReference().addValueEventListener(ValueEventListenerAdapter {
-            mUser = it.getValue(User::class.java)!!
+            mUser = it.asUser()!!
             profileImageView.loadUserPhoto(mUser.photo)
             userNameTextView.text = mUser.userName
         })
@@ -52,9 +53,7 @@ class ProfileActivity : BaseActivity(4) {
             .addValueEventListener(ValueEventListenerAdapter{
                 val images = it.children.map { it.getValue(String::class.java) }
                 imagesRecycler.adapter = ImagesAdapter(
-                    (
-                            images + images +images +images +images +images +images +images +images +images +images +images +images +images +images +images +images +images +images +images + images
-                            ) as List<String>)
+                    (images) as List<String>)
             })
     }
 }

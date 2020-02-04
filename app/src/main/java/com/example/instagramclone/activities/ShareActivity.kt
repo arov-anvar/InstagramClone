@@ -31,7 +31,7 @@ class ShareActivity : BaseActivity(2) {
         shareText.setOnClickListener{ share() }
 
         mFirebaseHelper.currentUserReference().addValueEventListener(ValueEventListenerAdapter{
-            mUser = it.getValue(User::class.java)!!
+            mUser = it.asUser()!!
         })
     }
 
@@ -53,8 +53,8 @@ class ShareActivity : BaseActivity(2) {
                 .child(imageUri!!.lastPathSegment!!)
             ref.putFile(imageUri).addOnCompleteListener{
                     if (it.isSuccessful) {
-                        val imageDownloadUrl = ref.downloadUrl.toString()
                         ref.downloadUrl.addOnCompleteListener{
+                            val imageDownloadUrl = it.result.toString()
                             mFirebaseHelper.database.child("images").child(uid).push()
                                 .setValue(it.result.toString())
                                 .addOnCompleteListener {
