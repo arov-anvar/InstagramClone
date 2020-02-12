@@ -1,15 +1,14 @@
 package com.example.instagramclone.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.instagramclone.R
 import com.example.instagramclone.utils.FirebaseHelper
 import com.example.instagramclone.utils.ValueEventListenerAdapter
@@ -47,7 +46,7 @@ class MainActivity : BaseActivity(0) {
             mFirebase.database.child("feed-posts").child(currentUser.uid)
                 .addValueEventListener(ValueEventListenerAdapter {
                     val posts = it.children.map { it.getValue(FeedPost::class.java)!! }
-                        .sortedBy { it.timestampDate() }
+                        .sortedByDescending { it.timestampDate() }
                     feedRecycler.adapter = FeedAdapter(posts)
                     feedRecycler.layoutManager = LinearLayoutManager(this)
                 })
@@ -66,7 +65,14 @@ class FeedAdapter(private val posts: List<FeedPost>) :
 
     override fun getItemCount(): Int = posts.size
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.view.postImage.loadImage(posts[position].image)
+        val view = holder.view
+        val post = posts[position]
+        view.postImage.loadImage(post.image)
+        view.userPhotoImage.loadUserPhoto(post.photo!!)
+        view.usernameText.text = post.username
+        view.likesText.text = post.likeCount.toString()
+        view.captionText.text = "${post.username}: ${post.caption}"
     }
 }

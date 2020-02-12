@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/userPhotoImage"
         style="@style/icon"
         android:src="@drawable/person"
@@ -86,6 +86,7 @@
         android:id="@+id/captionText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/colorBlack"
         android:text="This is message will be caption"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/likesText"

@@ -2,6 +2,7 @@ package com.example.instagramclone.activities
 
 import android.content.Context
 import android.content.Intent
+import android.media.Image
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -46,14 +47,25 @@ class ProfileActivity : BaseActivity(4) {
             mUser = it.asUser()!!
             profileImageView.loadUserPhoto(mUser.photo)
             userNameTextView.text = mUser.userName
+            postsCountText.text = "0"
+            followersCountText.text = mUser.followers.count().toString()
+            followingCountText.text = mUser.follows.count().toString()
+            getImage()
         })
 
         imagesRecycler.layoutManager = GridLayoutManager(this, 3)
-        mFirebaseHelper.database.child("images").child(mFirebaseHelper.auth.currentUser!!.uid)
-            .addValueEventListener(ValueEventListenerAdapter{
-                val images = it.children.map { it.getValue(String::class.java) }
-                imagesRecycler.adapter = ImagesAdapter(
-                    (images) as List<String>)
+    }
+
+    private fun getImage() {
+        mFirebaseHelper.database.child("feed-posts").child(mUser.uid)
+            .addValueEventListener(ValueEventListenerAdapter {
+                val posts = it.children.map { it.getValue(FeedPost::class.java) }
+                    .sortedByDescending { it!!.timestampDate() }
+                val images : ArrayList<String> = ArrayList()
+                for (item in posts) {
+                    images.add(item!!.image)
+                }
+                imagesRecycler.adapter = ImagesAdapter(images)
             })
     }
 }

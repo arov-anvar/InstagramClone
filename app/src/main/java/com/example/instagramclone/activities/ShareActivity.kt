@@ -54,23 +54,13 @@ class ShareActivity : BaseActivity(2) {
             ref.putFile(imageUri).addOnCompleteListener{
                     if (it.isSuccessful) {
                         ref.downloadUrl.addOnCompleteListener{
-                            val imageDownloadUrl = it.result.toString()
-                            mFirebaseHelper.database.child("images").child(uid).push()
-                                .setValue(it.result.toString())
+                            mFirebaseHelper.database.child("feed-posts")
+                                .child(uid).push().setValue(mkFeedPost(uid, it.result.toString()))
                                 .addOnCompleteListener {
                                     if (it.isSuccessful) {
-                                        mFirebaseHelper.database.child("feed-posts")
-                                            .child(uid).push().setValue(mkFeedPost(uid, imageDownloadUrl))
-                                            .addOnCompleteListener{
-                                                if (it.isSuccessful) {
-                                                    startActivity(Intent(this,
-                                                        ProfileActivity::class.java))
-                                                    finish()
-                                                }
-                                            }
-
-                                    } else {
-                                        showToast(it.exception!!.message!!)
+                                        startActivity(Intent(this,
+                                            ProfileActivity::class.java))
+                                        finish()
                                     }
                                 }
                         }
@@ -84,7 +74,7 @@ class ShareActivity : BaseActivity(2) {
     private fun mkFeedPost(uid: String, imageDownloadUrl: String): FeedPost {
         return FeedPost(
             uid = uid,
-            username = imageDownloadUrl,
+            username = mUser.userName,
             image = imageDownloadUrl,
             caption = captionInput.text.toString(),
             photo = mUser.photo
